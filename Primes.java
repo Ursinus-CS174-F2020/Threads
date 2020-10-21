@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class Primes {
+public class Primes implements Runnable {
     public static boolean isPrime(int x) {
         boolean prime = true;
         if (x > 2) {
@@ -21,23 +21,27 @@ public class Primes {
         this.end = end;
     }
 
-    public int countPrimes() {
+    public void run() {
         int count = 0;
         for (int x = start; x <= end; x++) {
             if (isPrime(x)) {
                 count++;
             }
         }
-        return count;
+        System.out.println(count + " primes between " + start + " and " + end);
     }
 
     public static void main(String[] args) {
-        if (args.length < 2) {
-            throw new IllegalArgumentException("Need a start and and end");
+        if (args.length < 1) {
+            throw new IllegalArgumentException("Need and end and number of threads");
         }
-        int start = Integer.parseInt(args[0]);
-        int end = Integer.parseInt(args[1]);
-        Primes p = new Primes(start, end);
-        System.out.println(p.countPrimes() + " primes between " + start + " and " + end);
+        int end = Integer.parseInt(args[0]);
+        int NThreads = Integer.parseInt(args[1]);
+        int NumsPerThread = end/NThreads;
+        for (int i = 0; i < NThreads; i++) {
+            System.out.println(i*NumsPerThread + ", " + ((i+1)*NumsPerThread-1));
+            Primes p = new Primes(i*NumsPerThread, (i+1)*NumsPerThread-1);
+            new Thread(p).start();
+        }
     }
 }
